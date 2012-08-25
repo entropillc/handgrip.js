@@ -1,7 +1,7 @@
 Handgrip.js
 ===========
 
-Turns any DOM element into a movable, resizable object.
+Transforms any DOM element into a movable, resizable object.
 
 Usage
 -----
