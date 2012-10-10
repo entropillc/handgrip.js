@@ -21,10 +21,11 @@
               box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.5);
     }
     
-    #show-coordinates-button {
+    #buttons {
       position: relative;
       left: 50%;
       margin: 10px 0 0 -400px;
+      width: 800px;
     }
   </style>
   <script>
@@ -34,6 +35,13 @@
           var rect = element.handgrip.getRect();
           
           window.alert('x: ' + rect.x + ', y: ' + rect.y + ', w: ' + rect.width + ', h: ' + rect.height);
+        });
+      });
+      $('#show-html-button').bind('click', function(evt) {
+        $('.hg-element').each(function(index, element) {
+          var html = element.handgrip.getHtml();
+          
+          window.alert(html);
         });
       });
     });
@@ -54,7 +62,7 @@
       </div>
     </div>
     <div class="hg-element" data-position-x="440" data-position-y="220" data-size-width="100" data-size-height="100">
-      <div class="hg-content">
+      <div class="hg-content" contenteditable="true">
         <p>
           Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
           tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
@@ -65,7 +73,18 @@
         </p>
       </div>
     </div>
+    <div class="hg-element" data-position-x="240" data-position-y="360" data-size-width="400" data-size-height="80">
+      <div class="hg-content" contenteditable="true" data-auto-font-size="true">
+        <p>
+          My font size is automatic!
+        </p>
+      </div>
+    </div>
   </div>
-  <button id="show-coordinates-button">Show Coordinates</button>
+  
+  <div id="buttons">
+    <button id="show-coordinates-button">Show Coordinates</button>
+    <button id="show-html-button">Show HTML</button>
+  </div>
 </body>
 </html>

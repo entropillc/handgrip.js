@@ -93,6 +93,38 @@ Handgrip.getTouchWithIdentifier = function(touches, identifier) {
   return null;
 };
 
+Handgrip.calculateAutoFontSize = function(element, minFontSize, maxFontSize) {
+  var $content = $(element);
+  var $parent = $content.parent();
+  
+  var maxHeight = $parent.height() - 36;
+  
+  minFontSize = minFontSize || 8;
+  maxFontSize = maxFontSize || 300;
+  
+  var originalMinFontSize = minFontSize;
+  var originalMaxFontSize = maxFontSize;
+  
+  $content.css('position', 'relative');
+  
+  var fontSize;
+  
+  while (minFontSize < maxFontSize - 1) {
+    fontSize = Math.floor((minFontSize + maxFontSize) / 2);
+    $content.css('font-size', fontSize + 'px');
+    
+    if ($content.height() < maxHeight) minFontSize = fontSize;
+    else maxFontSize = fontSize;
+  }
+  
+  fontSize = minFontSize;
+  
+  $content.css({
+    'position': '',
+    'font-size': fontSize + 'px'
+  });
+};
+
 Handgrip.prototype = {
   constructor: Handgrip,
   
@@ -119,7 +151,11 @@ Handgrip.prototype = {
       evt.preventDefault();
     }
     
-    else if ($(evt.target).hasClass('hg-element')) handgrip._isMoving = true;
+    else if ($(evt.target).hasClass('hg-element')) {
+      handgrip._isMoving = true;
+     
+      evt.preventDefault();
+    }
     
     handgrip._lastMousePosition = Handgrip.getPositionForEvent(evt);
     handgrip._lastTouchIdentifier = (Handgrip.isTouchSupported) ? evt.originalEvent.targetTouches[0].identifier : null;
@@ -139,9 +175,7 @@ Handgrip.prototype = {
     var mousePosition = Handgrip.getPositionForEvent(evt, handgrip._lastTouchIdentifier);
     var mouseDelta = Handgrip.getDeltaForPositions(mousePosition, handgrip._lastMousePosition);
     
-    if (isMoving) {
-      handgrip.addToPosition(mouseDelta);
-    }
+    if (isMoving) handgrip.addToPosition(mouseDelta);
     
     else if (isResizing) {
       switch (handgrip._activeHandle) {
@@ -275,10 +309,15 @@ Handgrip.prototype = {
     size.width  = (size.width  > 0) ? size.width  : 0;
     size.height = (size.height > 0) ? size.height : 0;
     
-    this.$element.css({
+    var $element = this.$element;
+    $element.css({
       width:  size.width  + 'px',
       height: size.height + 'px'
     });
+    
+    var $content = $element.children('.hg-content').first();
+    var autoFontSize = $content.attr('data-auto-font-size');
+    if (autoFontSize && (autoFontSize + '').toLowerCase() !== 'false') Handgrip.calculateAutoFontSize($content);
   },
   
   /**
@@ -297,7 +336,12 @@ Handgrip.prototype = {
     var size = this.getSize();
     
     return { x: position.x, y: position.y, width: size.width, height: size.height };
-  }
+  },
+  
+  /**
+  
+  */
+  getHtml: function() { return $('<div/>').append(this.$element.children('.hg-content').first().clone()).html(); }
 };
 
 $(function() {
@@ -321,5 +365,14 @@ $(function() {
     evt.stopImmediatePropagation();
     
     handgrip.setFocused(true);
+  });
+  
+  // Handle auto-font-sizing globally to reduce the overall number of event listeners.
+  $body.delegate('.hg-content[data-auto-font-size="true"]', 'keypress', function(evt) {
+    Handgrip.calculateAutoFontSize(this);
+  });
+  
+  $('.hg-content[data-auto-font-size="true"]').each(function(index, element) {
+    Handgrip.calculateAutoFontSize(element);
   });
 });
