@@ -5,6 +5,12 @@
   -webkit-user-drag: none;
 }
 
+.hg-container {
+  background: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
 .hg-element {
   border: 1px dashed #d9d9d9;
   position: absolute;
@@ -34,17 +40,43 @@
   cursor: move;
 }
 
+
+.hg-element::after {
+  content: '';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  bottom: -10px;
+  left: -10px;
+  width: auto;
+  height: auto;
+  z-index: -1;
+}
+
 .hg-content {
-  border: none;
+  cursor: auto;
   outline: none;
   position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  top: 10px;
+  right: 10px;
+  bottom: 10px;
+  left: 10px;
   width: auto;
   height: auto;
   overflow: hidden;
+}
+
+.hg-content > * {
+  margin: 0;
+  padding: 0;
+}
+
+.hg-element.hg-focus > .hg-content {
+  -webkit-user-select: auto;
+     -moz-user-select: auto;
+      -ms-user-select: auto;
+       -o-user-select: auto;
+          user-select: auto;
 }
 
 .hg-handle {
@@ -68,10 +100,10 @@
 .hg-handle::after {
   content: '';
   position: absolute;
-  width: 30px;
-  height: 30px;
   top: -10px;
   left: -10px;
+  width: 30px;
+  height: 30px;
 }
 
 .hg-focus > .hg-handle {

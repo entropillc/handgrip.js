@@ -115,11 +115,11 @@ Handgrip.prototype = {
     if ($(evt.target).hasClass('hg-handle')) {
       handgrip._isResizing = true;
       handgrip._activeHandle = evt.target.handleType;
+      
+      evt.preventDefault();
     }
     
-    else {
-      handgrip._isMoving = true;
-    }
+    else if ($(evt.target).hasClass('hg-element')) handgrip._isMoving = true;
     
     handgrip._lastMousePosition = Handgrip.getPositionForEvent(evt);
     handgrip._lastTouchIdentifier = (Handgrip.isTouchSupported) ? evt.originalEvent.targetTouches[0].identifier : null;
@@ -251,7 +251,7 @@ Handgrip.prototype = {
     this.setPosition(position.x + deltaPosition.x, position.y + deltaPosition.y);
   },
   
-  _size: null, // { width: 0, y: 0 }
+  _size: null, // { width: 0, height: 0 }
   
   /**
   
@@ -287,6 +287,16 @@ Handgrip.prototype = {
   addToSize: function(deltaSize) {
     var size = this._size;
     this.setSize(size.width + deltaSize.width, size.height + deltaSize.height);
+  },
+  
+  /**
+  
+  */
+  getRect: function() {
+    var position = this.getPosition();
+    var size = this.getSize();
+    
+    return { x: position.x, y: position.y, width: size.width, height: size.height };
   }
 };
 

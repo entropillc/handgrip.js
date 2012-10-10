@@ -9,30 +9,40 @@
   <script src="jquery-1.8.0.js"></script>
   <script src="handgrip.js"></script>
   <style>
-    html, body {
-      background: #ddd;
-      margin: 0;
-      padding: 10px 0;
-    }
+    html, body { background: #ddd; margin: 0; padding: 10px 0; }
     
     #root-container {
-      background: #fff;
-      position: relative;
       left: 50%;
       margin: 0 0 0 -400px;
       width: 800px;
       height: 600px;
-      overflow: hidden;
       -webkit-box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.5);
          -moz-box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.5);
               box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.5);
     }
+    
+    #show-coordinates-button {
+      position: relative;
+      left: 50%;
+      margin: 10px 0 0 -400px;
+    }
   </style>
+  <script>
+    $(function() {
+      $('#show-coordinates-button').bind('click', function(evt) {
+        $('.hg-element').each(function(index, element) {
+          var rect = element.handgrip.getRect();
+          
+          window.alert('x: ' + rect.x + ', y: ' + rect.y + ', w: ' + rect.width + ', h: ' + rect.height);
+        });
+      });
+    });
+  </script>
 </head>
 <body>
   <div class="hg-container" id="root-container">
     <div class="hg-element" data-position-x="260" data-position-y="40" data-size-width="240" data-size-height="160">
-      <div class="hg-content">
+      <div class="hg-content" contenteditable="true">
         <p>
           Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
           tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
@@ -56,5 +66,6 @@
       </div>
     </div>
   </div>
+  <button id="show-coordinates-button">Show Coordinates</button>
 </body>
 </html>
