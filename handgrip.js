@@ -26,6 +26,9 @@ var Handgrip = function Handgrip(element) {
   var size = this._size = { width: width, height: height };
   this.setSize(size);
   
+  var rotation = window.parseFloat($element.attr('data-rotation') || '0');
+  this.setRotation(rotation);
+  
   var $handles = this.$handles = {
     N : $('<div contenteditable="false" class="hg-handle hg-handle-n"/>' ).appendTo($element),
     NE: $('<div contenteditable="false" class="hg-handle hg-handle-ne"/>').appendTo($element),
@@ -34,7 +37,8 @@ var Handgrip = function Handgrip(element) {
     S : $('<div contenteditable="false" class="hg-handle hg-handle-s"/>' ).appendTo($element),
     SW: $('<div contenteditable="false" class="hg-handle hg-handle-sw"/>').appendTo($element),
     W : $('<div contenteditable="false" class="hg-handle hg-handle-w"/>' ).appendTo($element),
-    NW: $('<div contenteditable="false" class="hg-handle hg-handle-nw"/>').appendTo($element)
+    NW: $('<div contenteditable="false" class="hg-handle hg-handle-nw"/>').appendTo($element),
+    R:  $('<div contenteditable="false" class="hg-handle hg-handle-r"/>' ).appendTo($element)
   }, handle;
   
   for (var handleType in $handles) {
@@ -47,7 +51,7 @@ var Handgrip = function Handgrip(element) {
 /**
 
 */
-Handgrip.HandleType = { N: 'n', NE: 'ne', E: 'e', SE: 'se', S: 's', SW: 'sw', W: 'w', NW: 'nw' };
+Handgrip.HandleType = { N: 'n', NE: 'ne', E: 'e', SE: 'se', S: 's', SW: 'sw', W: 'w', NW: 'nw', R: 'r' };
 
 Handgrip.activeHandgrip = null;
 
@@ -131,27 +135,33 @@ Handgrip.prototype = {
   element: null,
   $element: null,
   
-  $handles: null, // { n: ..., ne: ..., e: ..., se: ..., s: ..., sw: ..., w: ..., nw: ... }
+  $handles: null, // { n: ..., ne: ..., e: ..., se: ..., s: ..., sw: ..., w: ..., nw: ..., r: ... }
   
   _activeHandle: null,
   
   _isMoving: false,
   _isResizing: false,
+  _isRotating: false,
   
   _lastMousePosition: null,
   _lastTouchIdentifier: null,
   
   _mouseDownHandler: function(evt) {
     var handgrip = Handgrip.activeHandgrip;
+    var $target = $(evt.target);
     
-    if ($(evt.target).hasClass('hg-handle')) {
-      handgrip._isResizing = true;
+    if ($target.hasClass('hg-handle')) {
+      if ($target.hasClass('hg-handle-r'))
+        handgrip._isRotating = true;
+      else
+        handgrip._isResizing = true;
+      
       handgrip._activeHandle = evt.target.handleType;
       
       evt.preventDefault();
     }
     
-    else if ($(evt.target).hasClass('hg-element')) {
+    else if ($target.hasClass('hg-element')) {
       handgrip._isMoving = true;
      
       evt.preventDefault();
@@ -167,15 +177,18 @@ Handgrip.prototype = {
   
   _mouseMoveHandler: function(evt) {
     var handgrip = Handgrip.activeHandgrip;
-    var isMoving = handgrip._isMoving, isResizing = handgrip._isResizing;
-    if (!isMoving && !isResizing) return;
+    var isMoving = handgrip._isMoving, isResizing = handgrip._isResizing, isRotating = handgrip._isRotating;
+    if (!isMoving && !isResizing && !isRotating) return;
     
     evt.preventDefault();
+    
+    var offset, size, rotation;
     
     var mousePosition = Handgrip.getPositionForEvent(evt, handgrip._lastTouchIdentifier);
     var mouseDelta = Handgrip.getDeltaForPositions(mousePosition, handgrip._lastMousePosition);
     
-    if (isMoving) handgrip.addToPosition(mouseDelta);
+    if (isMoving)
+      handgrip.addToPosition(mouseDelta);
     
     else if (isResizing) {
       switch (handgrip._activeHandle) {
@@ -211,12 +224,24 @@ Handgrip.prototype = {
       }
     }
     
+    else if (isRotating) {
+      offset = handgrip.getOffset();
+      size = handgrip.getSize();
+      
+      offset.x += size.width / 2;
+      offset.y += size.height / 2;
+      
+      rotation = ((Math.atan2(mousePosition.y - offset.y, mousePosition.x - offset.x) / Math.PI) * 180) + 90;
+      
+      handgrip.setRotation(rotation);
+    }
+    
     handgrip._lastMousePosition = mousePosition;
   },
   
   _mouseUpHandler: function(evt) {
     var handgrip = Handgrip.activeHandgrip;
-    handgrip._isMoving = handgrip._isResizing = false;
+    handgrip._isMoving = handgrip._isResizing = handgrip._isRotating = false;
     handgrip._activeHandle = null;
     
     var $window = $(window.addEventListener ? window : document.body);
@@ -256,6 +281,14 @@ Handgrip.prototype = {
   
   */
   getPosition: function() { return this._position; },
+  
+  /**
+  
+  */
+  getOffset: function() {
+    var offset = this.$element.offset();
+    return { x: offset.left, y: offset.top };
+  },
   
   /**
   
@@ -326,6 +359,33 @@ Handgrip.prototype = {
   addToSize: function(deltaSize) {
     var size = this._size;
     this.setSize(size.width + deltaSize.width, size.height + deltaSize.height);
+  },
+  
+  _rotation: 0,
+  
+  /**
+  
+  */
+  getRotation: function() { return this._rotation; },
+  
+  /**
+  
+  */
+  setRotation: function(rotation) {
+    this._rotation = rotation;
+    
+    var styles = {};
+    styles['-' + Handgrip.vendorPrefix + '-transform'] = styles['transform'] = 'rotate(' + rotation + 'deg)';
+    
+    this.$element.css(styles);
+  },
+  
+  /**
+  
+  */
+  addToRotation: function(deltaRotation) {
+    var rotation = this._rotation;
+    this.setRotation(rotation + deltaRotation);
   },
   
   /**

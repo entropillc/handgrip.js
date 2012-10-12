@@ -86,8 +86,8 @@
   opacity: 0;
   visibility: hidden;
   position: absolute;
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   -webkit-box-shadow: 0 0 2px 1px rgba(0, 128, 224, 0.4);
      -moz-box-shadow: 0 0 2px 1px rgba(0, 128, 224, 0.4);
           box-shadow: 0 0 2px 1px rgba(0, 128, 224, 0.4);
@@ -101,10 +101,10 @@
 .hg-handle::after {
   content: '';
   position: absolute;
-  top: -10px;
-  left: -10px;
-  width: 30px;
-  height: 30px;
+  top: -11px;
+  left: -11px;
+  width: 29px;
+  height: 29px;
 }
 
 .hg-focus > .hg-handle {
@@ -117,11 +117,41 @@
           transition-delay: 0s;
 }
 
-.hg-handle-n  { cursor: n-resize;  cursor: ns-resize;   margin: 0 0 0 -6px; top: -6px; right: auto; bottom: auto; left:  50%; }
-.hg-handle-ne { cursor: ne-resize; cursor: nesw-resize; margin: 0;          top: -6px; right: -6px; bottom: auto; left: auto; }
-.hg-handle-e  { cursor: e-resize;  cursor: ew-resize;   margin: -6px 0 0;   top:  50%; right: -6px; bottom: auto; left: auto; }
-.hg-handle-se { cursor: se-resize; cursor: nwse-resize; margin: 0;          top: auto; right: -6px; bottom: -6px; left: auto; }
-.hg-handle-s  { cursor: s-resize;  cursor: ns-resize;   margin: 0 0 0 -6px; top: auto; right: auto; bottom: -6px; left:  50%; }
-.hg-handle-sw { cursor: sw-resize; cursor: nesw-resize; margin: 0;          top: auto; right: auto; bottom: -6px; left: -6px; }
-.hg-handle-w  { cursor: w-resize;  cursor: ew-resize;   margin: -6px 0 0;   top:  50%; right: auto; bottom: auto; left: -6px; }
-.hg-handle-nw { cursor: nw-resize; cursor: nwse-resize; margin: 0;          top: -6px; right: auto; bottom: auto; left: -6px; }
+.hg-handle-n  { cursor: n-resize;  cursor: ns-resize;   margin: 0 0 0 -6px; top: -6px;  right: auto; bottom: auto; left:  50%; }
+.hg-handle-ne { cursor: ne-resize; cursor: nesw-resize; margin: 0;          top: -6px;  right: -6px; bottom: auto; left: auto; }
+.hg-handle-e  { cursor: e-resize;  cursor: ew-resize;   margin: -6px 0 0;   top:  50%;  right: -6px; bottom: auto; left: auto; }
+.hg-handle-se { cursor: se-resize; cursor: nwse-resize; margin: 0;          top: auto;  right: -6px; bottom: -6px; left: auto; }
+.hg-handle-s  { cursor: s-resize;  cursor: ns-resize;   margin: 0 0 0 -6px; top: auto;  right: auto; bottom: -6px; left:  50%; }
+.hg-handle-sw { cursor: sw-resize; cursor: nesw-resize; margin: 0;          top: auto;  right: auto; bottom: -6px; left: -6px; }
+.hg-handle-w  { cursor: w-resize;  cursor: ew-resize;   margin: -6px 0 0;   top:  50%;  right: auto; bottom: auto; left: -6px; }
+.hg-handle-nw { cursor: nw-resize; cursor: nwse-resize; margin: 0;          top: -6px;  right: auto; bottom: auto; left: -6px; }
+
+.hg-handle-r  {
+  cursor: url(grab.cur) 4 4, default;
+  cursor: -webkit-grab;
+  cursor:    -moz-grab;
+  cursor:         grab;
+  margin: 0 0 0 -6px;
+  top: -40px;
+  right: auto;
+  bottom: auto;
+  left: 50%;
+}
+
+.hg-handle-r::after {
+  border-left: 1px dashed #44687c;
+  content: '';
+  display: block;
+  position: absolute;
+  top: 10px;
+  left: 4px;
+  width: 0;
+  height: 23px;
+}
+
+.hg-handle-r:active {
+  cursor: url(grabbing.cur) 4 4, default;
+  cursor: -webkit-grabbing;
+  cursor:    -moz-grabbing;
+  cursor:         grabbing;
+}
