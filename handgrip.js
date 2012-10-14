@@ -49,6 +49,14 @@ var Handgrip = function Handgrip(element) {
 };
 
 /**
+  Event types for Handgrip.
+*/
+Handgrip.EventType = {
+  DidFocusElement: 'Handgrip:DidSetFocus',
+  DidBlurElement:  'Handgrip:DidBlurElement'
+};
+
+/**
 
 */
 Handgrip.HandleType = { N: 'n', NE: 'ne', E: 'e', SE: 'se', S: 's', SW: 'sw', W: 'w', NW: 'nw', R: 'r' };
@@ -269,9 +277,17 @@ Handgrip.prototype = {
       
       $element.addClass('hg-focus');
       $element.bind(Handgrip.isTouchSupported ? 'touchstart' : 'mousedown', this._mouseDownHandler);
+    
+      $element.trigger($.Event(Handgrip.EventType.DidFocusElement, {
+        handgrip: this
+      }));
     } else {
       $element.removeClass('hg-focus');
       $element.unbind(Handgrip.isTouchSupported ? 'touchstart' : 'mousedown', this._mouseDownHandler);
+
+      $element.trigger($.Event(Handgrip.EventType.DidBlurElement, {
+        handgrip: this
+      }));
     }
   },
   
